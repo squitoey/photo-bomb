@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { api, REVEAL_LABEL, dateTime, dirName, fileName, fullUrl, Group, human, Member, Photo, similarity, thumbUrl } from "./api";
+import { api, REVEAL_LABEL, dateTime, dirName, fileName, Group, human, Member, Photo, similarity } from "./api";
+import { Thumb } from "./Thumb";
 import type { Marks } from "./App";
 
 interface Props {
@@ -41,7 +42,7 @@ export function Compare({ group, start, marks, toggleMark, keepOnly, onInfo, onC
     return (
       <div className={`pane ${marked ? "marked" : ""}`}>
         <div className="pane-img">
-          {m.decoded === 1 ? <img src={fullUrl(m)} alt="" /> : <div className="noimg">No preview</div>}
+          <Thumb photo={m} full placeholder="No preview" />
           <span className={`badge ${marked ? "remove" : "keep"}`}>{marked ? "Remove" : "Keep"}</span>
         </div>
         <table className="facts">
@@ -107,7 +108,7 @@ export function Compare({ group, start, marks, toggleMark, keepOnly, onInfo, onC
               onClick={(e) => (e.shiftKey ? setLeft(i) : setRight(i))}
               title={`${m.path}\nClick: show on the right. Shift-click: show on the left.`}
             >
-              {m.decoded === 1 ? <img src={thumbUrl(m)} alt="" /> : <div className="noimg" />}
+              <Thumb photo={m} placeholder="" />
             </div>
           ))}
         </div>

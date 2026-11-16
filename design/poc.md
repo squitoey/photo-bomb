@@ -19,6 +19,7 @@ It is deliberately narrower than the design in places; those are listed here.
 | Other photos | View of files in no exact group and no similar group at the current similarity level |
 | Removable sources | Per-source flag. Files that cannot be found are kept and flagged (`photo.missing`) instead of dropped; they still appear in groups, tagged "offline". Offline sources behave the same way |
 | Live results | Hashes, decoded photos and similar pairs are saved in small batches during a scan. Groups fill in while it runs (the app reloads lists every few seconds) and a stopped scan resumes where it left off. Pair search is incremental: only newly analysed photos are compared |
+| Thumbnails | Kept in the local cache folder, never on the scanned drive. Made during the scan's analysis stage, and on demand when the app asks for one that does not exist yet |
 | Desktop app | Sources, Exact, Similar, Other photos, Compare, Info, Review & apply, History |
 | CLI | Same features, dry-run by default |
 | Formats | JPEG, PNG, WebP, GIF, BMP, TIFF natively; HEIC/AVIF/RAW through the macOS `sips` tool |

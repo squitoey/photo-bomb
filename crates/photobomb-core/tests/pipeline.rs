@@ -331,6 +331,12 @@ fn results_are_saved_during_a_scan_and_later_scans_are_incremental() {
         .iter()
         .any(|m| m.photo.path.ends_with("two_small.png")));
 
+    // A thumbnail that has gone from the cache is made again when asked for.
+    let id = similar[0].members[0].photo.id;
+    fs::remove_file(lib.thumb_path(id)).unwrap();
+    assert_eq!(lib.ensure_thumb(id).unwrap(), lib.thumb_path(id));
+    assert!(lib.thumb_path(id).exists());
+
     // Nothing new: no work, same pairs.
     let again = rescan(&lib);
     assert_eq!((again.hashed, again.decoded, again.pairs), (0, 0, s.pairs));

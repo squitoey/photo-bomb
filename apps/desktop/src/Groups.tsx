@@ -13,11 +13,11 @@ import {
   Photo,
   SimilarOpts,
   similarity,
-  thumbUrl,
 } from "./api";
 import type { Marks } from "./App";
 import { Compare } from "./Compare";
 import { PhotoMenu } from "./PhotoMenu";
+import { Thumb } from "./Thumb";
 
 const PAGE = 40;
 
@@ -225,7 +225,7 @@ export function Groups({ kind, opts, onOpts, marks, toggleMark, setMarked, revis
                     title={m.path}
                   >
                     <div className="thumb">
-                      {m.decoded === 1 ? <img src={thumbUrl(m)} loading="lazy" alt="" /> : <div className="noimg">{(m.path.split(".").pop() ?? "").toUpperCase()}</div>}
+                      <Thumb photo={m} lazy />
                       {marked ? (
                         <span className="badge remove">Remove</span>
                       ) : m.id === g.keeper ? (

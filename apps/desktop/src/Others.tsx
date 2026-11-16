@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { api, REVEAL_LABEL, dateTime, dirName, fileName, human, PhotoPage, SimilarOpts, thumbUrl } from "./api";
+import { api, REVEAL_LABEL, dateTime, dirName, fileName, human, PhotoPage, SimilarOpts } from "./api";
 import { PhotoMenu } from "./PhotoMenu";
+import { Thumb } from "./Thumb";
 
 const PAGE = 120;
 
@@ -65,11 +66,7 @@ export function Others({ opts, revision, onInfo, onChanged, onError }: Props) {
             {data.photos.map((p) => (
               <div key={p.id} className="photo" onClick={() => onInfo(p.id)} title={p.path}>
                 <div className="thumb">
-                  {p.decoded === 1 ? (
-                    <img src={thumbUrl(p)} loading="lazy" alt="" />
-                  ) : (
-                    <div className="noimg">{(p.path.split(".").pop() ?? "").toUpperCase()}</div>
-                  )}
+                  <Thumb photo={p} lazy />
                 </div>
                 <PhotoMenu
                   items={[

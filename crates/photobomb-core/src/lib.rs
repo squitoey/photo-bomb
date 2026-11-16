@@ -260,6 +260,41 @@ impl Library {
         Ok(db::photos_by_ids(&self.db(), &[id])?.into_iter().next())
     }
 
+    /// The photo's thumbnail, made now if it does not exist yet. Scans only create
+    /// thumbnails in their last stage, and the cache folder can be emptied by the
+    /// system, so the UI asks for them on demand.
+    pub fn ensure_thumb(&self, id: i64) -> Result<PathBuf> {
+        let thumb = self.thumb_path(id);
+        if thumb.exists() {
+            return Ok(thumb);
+        }
+        let photo = self.photo(id)?.context("unknown photo")?;
+        let original = Path::new(&photo.path);
+        anyhow::ensure!(decode::is_image(original), "not an image");
+        anyhow::ensure!(photo.decoded != 2, "the file could not be read as an image");
+
+        // A few at a time: each one decodes a full-size photo.
+        let _slot = ThumbSlot::take();
+        if thumb.exists() {
+            return Ok(thumb);
+        }
+        let scratch = self.data_dir.join("scratch-thumbs");
+        std::fs::create_dir_all(&scratch)?;
+        // Written under another name first, so a half-written file is never served.
+        let tmp = self.thumbs_dir.join(format!(
+            "{id}.tmp-{}-{:?}.jpg",
+            std::process::id(),
+            std::thread::current().id()
+        ));
+        let made = std::panic::catch_unwind(|| decode::process(original, &tmp, &scratch));
+        let ok = matches!(made, Ok(Ok(_))) && std::fs::rename(&tmp, &thumb).is_ok();
+        if !ok {
+            let _ = std::fs::remove_file(&tmp);
+            anyhow::bail!("could not make a thumbnail");
+        }
+        Ok(thumb)
+    }
+
     /// A file the UI can display at full size: the original when a browser can show it,
     /// otherwise a converted copy kept in the cache.
     pub fn preview_path(&self, id: i64) -> Result<PathBuf> {
@@ -283,6 +318,31 @@ impl Library {
             &self.db(),
             "state = 'present' AND decoded = 2 ORDER BY path",
         )
+    }
+}
+
+/// Limits how many thumbnails are generated on demand at once.
+struct ThumbSlot;
+
+static THUMB_SLOTS: (Mutex<usize>, std::sync::Condvar) = (Mutex::new(4), std::sync::Condvar::new());
+
+impl ThumbSlot {
+    fn take() -> Self {
+        let (lock, cv) = &THUMB_SLOTS;
+        let mut free = lock.lock().unwrap_or_else(|e| e.into_inner());
+        while *free == 0 {
+            free = cv.wait(free).unwrap_or_else(|e| e.into_inner());
+        }
+        *free -= 1;
+        ThumbSlot
+    }
+}
+
+impl Drop for ThumbSlot {
+    fn drop(&mut self) {
+        let (lock, cv) = &THUMB_SLOTS;
+        *lock.lock().unwrap_or_else(|e| e.into_inner()) += 1;
+        cv.notify_one();
     }
 }
 

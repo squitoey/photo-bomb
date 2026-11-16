@@ -327,7 +327,10 @@ fn serve_photo(lib: &Library, request: &Request<Vec<u8>>) -> Response<Cow<'stati
         return fail(StatusCode::BAD_REQUEST);
     };
     let path = match kind {
-        "thumb" => lib.thumb_path(id),
+        "thumb" => match lib.ensure_thumb(id) {
+            Ok(p) => p,
+            Err(_) => return fail(StatusCode::NOT_FOUND),
+        },
         "full" => match lib.preview_path(id) {
             Ok(p) => p,
             Err(_) => return fail(StatusCode::NOT_FOUND),

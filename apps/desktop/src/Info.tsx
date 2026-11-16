@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { api, REVEAL_LABEL, dateTime, dirName, fileName, fullUrl, human, PhotoDetails, thumbUrl } from "./api";
+import { Thumb } from "./Thumb";
+import { api, REVEAL_LABEL, dateTime, dirName, fileName, human, PhotoDetails } from "./api";
 
 interface Props {
   id: number;
@@ -51,11 +52,7 @@ export function Info({ id, onClose, onChanged }: Props) {
     return (
       <div className="info">
         <div className="info-img">
-          {d.decoded === 1 ? (
-            <img src={d.exists ? fullUrl(d) : thumbUrl(d)} alt="" />
-          ) : (
-            <div className="noimg">No preview</div>
-          )}
+          <Thumb photo={d} full={d.exists} placeholder="No preview" />
         </div>
         <div className="info-facts">
           <h4>File</h4>
