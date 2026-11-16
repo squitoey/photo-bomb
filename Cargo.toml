@@ -1,0 +1,12 @@
+[workspace]
+resolver = "2"
+members = ["crates/photobomb-core", "crates/photobomb-cli", "apps/desktop/src-tauri"]
+
+[profile.release]
+opt-level = 3
+
+# Decoding and hashing are far too slow unoptimised, even in dev builds.
+[profile.dev.package."*"]
+opt-level = 3
+[profile.dev.package.photobomb-core]
+opt-level = 3
