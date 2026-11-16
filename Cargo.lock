@@ -2960,7 +2960,7 @@ dependencies = [
 
 [[package]]
 name = "photobomb-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -2971,7 +2971,7 @@ dependencies = [
 
 [[package]]
 name = "photobomb-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "blake3",
@@ -2993,7 +2993,7 @@ dependencies = [
 
 [[package]]
 name = "photobomb-desktop"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "photobomb-core",
  "serde",
