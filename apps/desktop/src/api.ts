@@ -190,8 +190,14 @@ export const api = {
   reveal: (id: number) => invoke<void>("reveal", { id }),
 };
 
-export const thumbUrl = (p: Photo) => `photo://localhost/thumb/${p.id}?v=${p.mtime_ns}`;
-export const fullUrl = (p: Photo) => `photo://localhost/full/${p.id}?v=${p.mtime_ns}`;
+const UA = navigator.userAgent;
+/** "Show in Finder", named for the file manager of this operating system. */
+export const REVEAL_LABEL = UA.includes("Mac") ? "Show in Finder" : UA.includes("Windows") ? "Show in Explorer" : "Open folder";
+
+// Custom protocols are served as http://<scheme>.localhost on Windows.
+const PHOTO_BASE = UA.includes("Windows") ? "http://photo.localhost" : "photo://localhost";
+export const thumbUrl = (p: Photo) => `${PHOTO_BASE}/thumb/${p.id}?v=${p.mtime_ns}`;
+export const fullUrl = (p: Photo) => `${PHOTO_BASE}/full/${p.id}?v=${p.mtime_ns}`;
 
 export function human(bytes: number): string {
   const units = ["B", "KB", "MB", "GB", "TB"];
@@ -204,12 +210,15 @@ export function human(bytes: number): string {
   return u === 0 ? `${bytes} B` : `${v.toFixed(1)} ${units[u]}`;
 }
 
+/** Index of the last path separator, on any operating system. */
+const lastSep = (path: string) => Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
+
 export function fileName(path: string): string {
-  return path.slice(path.lastIndexOf("/") + 1);
+  return path.slice(lastSep(path) + 1);
 }
 
 export function dirName(path: string): string {
-  return path.slice(0, path.lastIndexOf("/"));
+  return path.slice(0, lastSep(path));
 }
 
 /** Hash distance (0-64) as a rough "percent similar". */

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api, dateTime, dirName, fileName, fullUrl, Group, human, Member, Photo, similarity, thumbUrl } from "./api";
+import { api, REVEAL_LABEL, dateTime, dirName, fileName, fullUrl, Group, human, Member, Photo, similarity, thumbUrl } from "./api";
 import type { Marks } from "./App";
 
 interface Props {
@@ -76,7 +76,7 @@ export function Compare({ group, start, marks, toggleMark, keepOnly, onInfo, onC
           <button onClick={() => toggleMark(m)}>{marked ? "Keep this" : "Remove this"}</button>
           <button onClick={() => keepOnly(m.id)}>Keep only this</button>
           <button onClick={() => onInfo(m.id)}>Info</button>
-          <button onClick={() => api.reveal(m.id)}>Show in Finder</button>
+          <button onClick={() => api.reveal(m.id)}>{REVEAL_LABEL}</button>
         </div>
       </div>
     );

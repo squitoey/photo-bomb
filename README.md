@@ -3,7 +3,7 @@
 A utility for managing photos: finds byte-identical files, groups similar-looking photos at an
 adjustable similarity level, and lets you trash, move or hard-link the extras, with undo.
 
-Status: proof of concept, macOS only. Design docs are in [design/](design/README.md); what the
+Status: proof of concept, developed on macOS; Windows and Linux builds are produced by CI but untested by hand. Design docs are in [design/](design/README.md); what the
 POC does and does not cover is in [design/poc.md](design/poc.md).
 
 ## Layout
@@ -78,3 +78,10 @@ index, which is handy for experiments.
 | Thumbnails | `~/Library/Caches/photobomb/thumbs` |
 
 Nothing is written into your photo folders. Deleting both locations resets the app.
+
+## Development
+
+- CI (`.github/workflows/ci.yml`) runs on every push to every branch: frontend type-check and
+  build, `cargo fmt --check`, `cargo clippy -D warnings`, and the tests on Linux, macOS and Windows.
+- Before pushing: `cargo fmt --all && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace`
+- Releases: see [RELEASING.md](RELEASING.md).

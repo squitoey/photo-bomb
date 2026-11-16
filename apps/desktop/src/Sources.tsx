@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
-import { api, AppStatus, human, Photo, ScanProgress, ScanSummary, Source } from "./api";
+import { api, REVEAL_LABEL, AppStatus, human, Photo, ScanProgress, ScanSummary, Source } from "./api";
 
 interface Props {
   status: AppStatus | null;
@@ -169,7 +169,7 @@ export function Sources({ status, scanning, progress, lastScan, revision, onScan
                 <div className="path">{p.path}</div>
                 <div className="muted small">{p.decode_error}</div>
               </div>
-              <button onClick={() => api.reveal(p.id)}>Show in Finder</button>
+              <button onClick={() => api.reveal(p.id)}>{REVEAL_LABEL}</button>
             </div>
           ))}
         </div>

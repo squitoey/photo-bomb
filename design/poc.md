@@ -27,7 +27,7 @@ It is deliberately narrower than the design in places; those are listed here.
 
 | Design | POC |
 | --- | --- |
-| Windows, macOS, Linux | macOS only (`sips`, system Trash, `open -R`) |
+| Windows, macOS, Linux | Developed and run on macOS. The code builds and its tests run on Windows and Linux in CI, and releases include installers for them, but those builds have not been used by hand. HEIC/AVIF/RAW are only decoded on macOS (`sips`) |
 | libheif / embedded RAW previews | Shells out to `sips`; slower per file, macOS only |
 | Moved files matched by content hash | A moved file is treated as removed + new, and is re-analysed |
 | Stacks (RAW+JPEG, Live Photos) | Not implemented; such pairs are treated as unrelated files |

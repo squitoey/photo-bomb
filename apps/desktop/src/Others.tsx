@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { api, dateTime, dirName, fileName, human, PhotoPage, SimilarOpts, thumbUrl } from "./api";
+import { api, REVEAL_LABEL, dateTime, dirName, fileName, human, PhotoPage, SimilarOpts, thumbUrl } from "./api";
 import { PhotoMenu } from "./PhotoMenu";
 
 const PAGE = 120;
@@ -74,7 +74,7 @@ export function Others({ opts, revision, onInfo, onChanged, onError }: Props) {
                 <PhotoMenu
                   items={[
                     { label: "Info", onClick: () => onInfo(p.id) },
-                    { label: "Show in Finder", onClick: () => api.reveal(p.id).catch((e) => onError(String(e))) },
+                    { label: REVEAL_LABEL, onClick: () => api.reveal(p.id).catch((e) => onError(String(e))) },
                     ...(p.not_dup
                       ? [
                           {

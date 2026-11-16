@@ -1,12 +1,11 @@
 //! End-to-end: scan a generated folder, check grouping, then exercise actions and undo.
 
 use std::fs;
-use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 use std::sync::atomic::AtomicBool;
 
 use image::{imageops::FilterType, DynamicImage, Rgb, RgbImage};
-use photobomb_core::{scan, Library, Op, SimilarOpts};
+use photobomb_core::{fsmeta, scan, Library, Op, SimilarOpts};
 
 /// A blocky random image: an 8x8 grid of colours scaled up, so each seed looks distinct.
 fn picture(seed: u64, size: u32) -> DynamicImage {
@@ -76,7 +75,7 @@ fn scan_group_act_undo() {
         .find(|m| m.photo.id == exact[0].keeper)
         .unwrap();
     assert!(
-        keeper.photo.path.ends_with("a/one.jpg"),
+        Path::new(&keeper.photo.path).ends_with("a/one.jpg"),
         "clean name is preferred as keeper"
     );
     let dup = exact[0]
@@ -117,16 +116,10 @@ fn scan_group_act_undo() {
     // Hard link, then undo.
     let res = lib.execute(&[dup.id], &Op::Hardlink, None, false).unwrap();
     assert_eq!((res.done, res.failed), (1, 0));
-    assert_eq!(
-        fs::metadata(&a).unwrap().ino(),
-        fs::metadata(&a_copy).unwrap().ino()
-    );
+    assert_eq!(fsmeta::ident_of(&a), fsmeta::ident_of(&a_copy));
     assert_eq!(lib.exact_groups().unwrap()[0].reclaimable, 0);
     lib.undo(res.batch_id).unwrap();
-    assert_ne!(
-        fs::metadata(&a).unwrap().ino(),
-        fs::metadata(&a_copy).unwrap().ino()
-    );
+    assert_ne!(fsmeta::ident_of(&a), fsmeta::ident_of(&a_copy));
     assert_eq!(fs::read(&a).unwrap(), fs::read(&a_copy).unwrap());
 
     // Move, then undo.
@@ -205,7 +198,7 @@ fn single_photo_ignore_others_and_removable_sources() {
                     .iter()
                     .flat_map(|g| g.members.iter().map(|m| &m.photo)),
             )
-            .find(|p| p.path.ends_with(suffix))
+            .find(|p| Path::new(&p.path).ends_with(suffix))
             .map(|p| p.id)
             .unwrap_or_else(|| panic!("no photo {suffix}"))
     };

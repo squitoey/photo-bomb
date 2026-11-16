@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api, dateTime, dirName, fileName, fullUrl, human, PhotoDetails, thumbUrl } from "./api";
+import { api, REVEAL_LABEL, dateTime, dirName, fileName, fullUrl, human, PhotoDetails, thumbUrl } from "./api";
 
 interface Props {
   id: number;
@@ -126,7 +126,7 @@ export function Info({ id, onClose, onChanged }: Props) {
             )}
             {d && (
               <button onClick={() => api.reveal(d.id)} disabled={!d.exists}>
-                Show in Finder
+                {REVEAL_LABEL}
               </button>
             )}
             <button onClick={onClose}>Close</button>

@@ -2,6 +2,11 @@
 resolver = "2"
 members = ["crates/photobomb-core", "crates/photobomb-cli", "apps/desktop/src-tauri"]
 
+# The one place the version lives. Bumped by scripts/bump_version.py (see RELEASING.md).
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
 [profile.release]
 opt-level = 3
 

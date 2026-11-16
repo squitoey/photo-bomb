@@ -115,12 +115,11 @@ enum OnOff {
 
 fn find_source(lib: &Library, dir: &Path) -> Result<photobomb_core::Source> {
     // The folder may be unplugged, so fall back to the path as typed.
-    let wanted = dir
-        .canonicalize()
+    let wanted = dunce::canonicalize(dir)
         .unwrap_or(absolute(dir)?)
         .to_string_lossy()
         .to_string();
-    let wanted = wanted.trim_end_matches('/').to_string();
+    let wanted = wanted.trim_end_matches(['/', '\\']).to_string();
     match lib.sources()?.into_iter().find(|s| s.root == wanted) {
         Some(s) => Ok(s),
         None => bail!("{wanted} is not a source"),

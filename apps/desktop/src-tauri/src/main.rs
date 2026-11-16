@@ -250,15 +250,24 @@ fn unreadable(state: State<AppState>) -> CmdResult<Vec<Photo>> {
     state.lib.unreadable().map_err(err)
 }
 
-/// Shows the file in Finder. Only paths that are in the index are accepted.
+/// Shows the file in the system file manager. Only paths that are in the index are accepted.
 #[tauri::command(async)]
 fn reveal(state: State<AppState>, id: i64) -> CmdResult<()> {
     let photo = state.lib.photo(id).map_err(err)?.ok_or("unknown photo")?;
-    std::process::Command::new("/usr/bin/open")
-        .arg("-R")
-        .arg(&photo.path)
-        .spawn()
-        .map_err(err)?;
+    let path = Path::new(&photo.path);
+    let mut cmd;
+    if cfg!(target_os = "macos") {
+        cmd = std::process::Command::new("/usr/bin/open");
+        cmd.arg("-R").arg(path);
+    } else if cfg!(windows) {
+        cmd = std::process::Command::new("explorer");
+        cmd.arg(format!("/select,{}", photo.path));
+    } else {
+        // No portable "select this file" on Linux; open the folder it is in.
+        cmd = std::process::Command::new("xdg-open");
+        cmd.arg(path.parent().unwrap_or(path));
+    }
+    cmd.spawn().map_err(err)?;
     Ok(())
 }
 

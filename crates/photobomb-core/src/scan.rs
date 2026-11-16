@@ -5,7 +5,6 @@
 //! keep querying while a scan runs.
 
 use std::collections::{HashMap, HashSet};
-use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
@@ -14,7 +13,7 @@ use rayon::prelude::*;
 use rusqlite::params;
 use serde::Serialize;
 
-use crate::{decode, hash, now, Library, D_MAX};
+use crate::{decode, fsmeta, hash, now, Library, D_MAX};
 
 /// Most pairs kept per photo, so flat or blank images cannot flood the pair table.
 const MAX_PAIRS_PER_PHOTO: usize = 200;
@@ -114,13 +113,14 @@ pub fn scan(lib: &Library, progress: ProgressFn, cancel: &AtomicBool) -> Result<
             if !seen.insert(path.clone()) {
                 continue; // overlapping sources
             }
+            let (dev, ino) = fsmeta::ident(entry.path(), &md);
             found.push(Found {
                 source_id: src.id,
                 path,
                 size: md.len() as i64,
-                mtime_ns: md.mtime() * 1_000_000_000 + md.mtime_nsec(),
-                dev: md.dev() as i64,
-                ino: md.ino() as i64,
+                mtime_ns: fsmeta::mtime_ns(&md),
+                dev,
+                ino,
             });
             if found.len().is_multiple_of(500) {
                 progress(ScanProgress {

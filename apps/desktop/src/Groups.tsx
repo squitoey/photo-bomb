@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   api,
+  REVEAL_LABEL,
   dateTime,
   dirName,
   fileName,
@@ -235,7 +236,7 @@ export function Groups({ kind, opts, onOpts, marks, toggleMark, setMarked, revis
                       items={[
                         { label: "Info", hint: "Show all details of this file", onClick: () => onInfo(m.id) },
                         { label: "Compare", onClick: () => setComparing({ group: g, start: i }) },
-                        { label: "Show in Finder", onClick: () => api.reveal(m.id).catch((e) => onError(String(e))) },
+                        { label: REVEAL_LABEL, onClick: () => api.reveal(m.id).catch((e) => onError(String(e))) },
                         {
                           label: "Not a duplicate",
                           hint: "Take only this photo out of the group. The others stay grouped.",

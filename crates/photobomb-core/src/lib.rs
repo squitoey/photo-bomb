@@ -4,6 +4,7 @@
 pub mod action;
 pub mod db;
 pub mod decode;
+pub mod fsmeta;
 pub mod group;
 pub mod hash;
 pub mod scan;
@@ -102,9 +103,15 @@ impl Library {
         if let Ok(dir) = std::env::var("PHOTOBOMB_DATA_DIR") {
             return Self::open(Path::new(&dir));
         }
-        let home = PathBuf::from(std::env::var("HOME").context("HOME is not set")?);
-        let data = home.join("Library/Application Support/photobomb");
-        let thumbs = home.join("Library/Caches/photobomb/thumbs");
+        // macOS: ~/Library/Application Support and ~/Library/Caches.
+        // Linux: ~/.local/share and ~/.cache. Windows: %APPDATA% and %LOCALAPPDATA%.
+        let data = dirs::data_dir()
+            .context("cannot find the user data folder")?
+            .join("photobomb");
+        let thumbs = dirs::cache_dir()
+            .context("cannot find the user cache folder")?
+            .join("photobomb")
+            .join("thumbs");
         Self::open_with(&data, &thumbs)
     }
 
@@ -134,9 +141,8 @@ impl Library {
     }
 
     pub fn add_source(&self, dir: &Path) -> Result<Source> {
-        let root = dir
-            .canonicalize()
-            .with_context(|| format!("cannot open {}", dir.display()))?;
+        let root =
+            dunce::canonicalize(dir).with_context(|| format!("cannot open {}", dir.display()))?;
         anyhow::ensure!(root.is_dir(), "{} is not a folder", root.display());
         anyhow::ensure!(
             !scan::is_protected(&root),

@@ -6,14 +6,13 @@
 //!  - every operation is journaled before it happens
 
 use std::collections::{HashMap, HashSet};
-use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 
 use anyhow::{bail, Context, Result};
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
-use crate::{db, hash, now, select, trash, Library, Photo, SimilarOpts};
+use crate::{db, fsmeta, hash, now, select, trash, Library, Photo, SimilarOpts};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(tag = "type", rename_all = "lowercase")]
@@ -85,8 +84,7 @@ fn stat_matches(p: &Photo) -> Result<(), String> {
     match std::fs::symlink_metadata(&p.path) {
         Err(_) => Err("file is missing; rescan".into()),
         Ok(md) => {
-            let mtime = md.mtime() * 1_000_000_000 + md.mtime_nsec();
-            if md.len() as i64 != p.size || mtime != p.mtime_ns {
+            if md.len() as i64 != p.size || fsmeta::mtime_ns(&md) != p.mtime_ns {
                 Err("file changed since the last scan; rescan".into())
             } else {
                 Ok(())
@@ -115,7 +113,7 @@ fn unique_path(wanted: &Path) -> PathBuf {
 }
 
 /// rename, falling back to copy + remove across volumes.
-fn move_file(from: &Path, to: &Path) -> Result<()> {
+pub(crate) fn move_file(from: &Path, to: &Path) -> Result<()> {
     if let Some(parent) = to.parent() {
         std::fs::create_dir_all(parent)?;
     }
@@ -320,7 +318,7 @@ impl Library {
             };
 
             let outcome: Result<Option<PathBuf>> = match op {
-                Op::Trash => trash::trash(from).map(Some),
+                Op::Trash => trash::trash(from),
                 Op::Move { dest } => {
                     let root = source_roots
                         .get(&photo.source_id)
@@ -463,6 +461,12 @@ impl Library {
                     }
                     Ok(())
                 }
+                "trash" => {
+                    if from.exists() {
+                        bail!("something else now exists at the original location");
+                    }
+                    trash::restore(from, to_path.as_deref().map(Path::new))
+                }
                 _ => {
                     let to = to_path
                         .as_deref()
@@ -471,7 +475,7 @@ impl Library {
                         bail!("something else now exists at the original location");
                     }
                     if !Path::new(to).exists() {
-                        bail!("file is no longer at {to} (was the trash emptied?)");
+                        bail!("file is no longer at {to}");
                     }
                     move_file(Path::new(to), from)
                 }
@@ -525,15 +529,10 @@ impl Library {
 /// Keeps the index in step with the file after it was relinked or restored.
 fn refresh_stat(conn: &rusqlite::Connection, photo_id: i64, path: &Path) -> Result<()> {
     if let Ok(md) = std::fs::symlink_metadata(path) {
+        let (dev, ino) = fsmeta::ident(path, &md);
         conn.execute(
             "UPDATE photo SET size=?2, mtime_ns=?3, dev=?4, ino=?5 WHERE id=?1",
-            params![
-                photo_id,
-                md.len() as i64,
-                md.mtime() * 1_000_000_000 + md.mtime_nsec(),
-                md.dev() as i64,
-                md.ino() as i64
-            ],
+            params![photo_id, md.len() as i64, fsmeta::mtime_ns(&md), dev, ino],
         )?;
     }
     Ok(())
