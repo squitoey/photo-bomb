@@ -22,7 +22,10 @@ export function Info({ id, onClose, onChanged }: Props) {
 
   useEffect(() => {
     setError(null);
-    api.photoDetails(id).then(setD).catch((e) => setError(String(e)));
+    api
+      .photoDetails(id)
+      .then(setD)
+      .catch((e) => setError(String(e)));
   }, [id, reload]);
 
   useEffect(() => {
@@ -48,7 +51,11 @@ export function Info({ id, onClose, onChanged }: Props) {
     if (!d) return <div className="muted">{error ?? "Loading…"}</div>;
     const mp = d.width && d.height ? (d.width * d.height) / 1e6 : null;
     const analysed =
-      d.decoded === 1 ? "Yes" : d.decoded === 2 ? `Could not be read: ${d.decode_error ?? "unknown error"}` : "Not yet (or not an image)";
+      d.decoded === 1
+        ? "Yes"
+        : d.decoded === 2
+          ? `Could not be read: ${d.decode_error ?? "unknown error"}`
+          : "Not yet (or not an image)";
     return (
       <div className="info">
         <div className="info-img">
@@ -63,7 +70,10 @@ export function Info({ id, onClose, onChanged }: Props) {
               {row("Source", d.source_root + (d.source_removable ? " (removable)" : ""))}
               {row("Size", `${human(d.size)} (${d.size.toLocaleString()} bytes)`)}
               {row("Format", (d.format ?? d.path.split(".").pop() ?? "").toUpperCase())}
-              {row("Dimensions", d.width && d.height ? `${d.width} × ${d.height}${mp ? ` (${mp.toFixed(1)} MP)` : ""}` : "—")}
+              {row(
+                "Dimensions",
+                d.width && d.height ? `${d.width} × ${d.height}${mp ? ` (${mp.toFixed(1)} MP)` : ""}` : "—",
+              )}
               {row("Taken", dateTime(d.taken_at))}
               {row("Modified", new Date(d.mtime_ns / 1e6).toLocaleString())}
               {row(
@@ -78,7 +88,11 @@ export function Info({ id, onClose, onChanged }: Props) {
           <h4>Fingerprints</h4>
           <table className="facts wide">
             <tbody>
-              {row("Content hash", d.content_hash ?? "Not computed — no other file has the same size", !!d.content_hash)}
+              {row(
+                "Content hash",
+                d.content_hash ?? "Not computed — no other file has the same size",
+                !!d.content_hash,
+              )}
               {row("Partial hash", d.partial_hash ?? "—", !!d.partial_hash)}
               {row("Visual hash", d.phash ? `${d.phash} · ${d.dhash}` : "—", !!d.phash)}
               {row("Analysed", analysed)}
@@ -89,10 +103,19 @@ export function Info({ id, onClose, onChanged }: Props) {
 
           <h4>Camera data (EXIF)</h4>
           {d.exif.length === 0 ? (
-            <p className="muted small">{d.exists ? "This file has no EXIF data." : "The file is not available, so its EXIF data cannot be read."}</p>
+            <p className="muted small">
+              {d.exists ? "This file has no EXIF data." : "The file is not available, so its EXIF data cannot be read."}
+            </p>
           ) : (
             <table className="facts wide">
-              <tbody>{d.exif.map(([k, v]) => <tr key={k}><th>{k}</th><td>{v}</td></tr>)}</tbody>
+              <tbody>
+                {d.exif.map(([k, v]) => (
+                  <tr key={k}>
+                    <th>{k}</th>
+                    <td>{v}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           )}
         </div>

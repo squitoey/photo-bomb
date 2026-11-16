@@ -166,12 +166,10 @@ export const api = {
   removeSource: (id: number) => invoke<void>("remove_source", { id }),
   startScan: () => invoke<void>("start_scan"),
   cancelScan: () => invoke<void>("cancel_scan"),
-  exactGroups: (page: number, pageSize: number) =>
-    invoke<GroupPage>("exact_groups", { page, pageSize }),
+  exactGroups: (page: number, pageSize: number) => invoke<GroupPage>("exact_groups", { page, pageSize }),
   similarGroups: (opts: SimilarOpts, page: number, pageSize: number) =>
     invoke<GroupPage>("similar_groups", { opts, page, pageSize }),
-  autoSelect: (kind: "exact" | "similar", opts: SimilarOpts | null) =>
-    invoke<Mark[]>("auto_select", { kind, opts }),
+  autoSelect: (kind: "exact" | "similar", opts: SimilarOpts | null) => invoke<Mark[]>("auto_select", { kind, opts }),
   ignoreGroup: (ids: number[]) => invoke<void>("ignore_group", { ids }),
   ignorePhoto: (id: number, others: number[]) => invoke<void>("ignore_photo", { id, others }),
   unignorePhoto: (id: number) => invoke<void>("unignore_photo", { id }),
@@ -192,7 +190,11 @@ export const api = {
 
 const UA = navigator.userAgent;
 /** "Show in Finder", named for the file manager of this operating system. */
-export const REVEAL_LABEL = UA.includes("Mac") ? "Show in Finder" : UA.includes("Windows") ? "Show in Explorer" : "Open folder";
+export const REVEAL_LABEL = UA.includes("Mac")
+  ? "Show in Finder"
+  : UA.includes("Windows")
+    ? "Show in Explorer"
+    : "Open folder";
 
 // Custom protocols are served as http://<scheme>.localhost on Windows.
 const PHOTO_BASE = UA.includes("Windows") ? "http://photo.localhost" : "photo://localhost";

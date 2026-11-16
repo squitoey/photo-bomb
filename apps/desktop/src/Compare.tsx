@@ -16,8 +16,13 @@ interface Props {
 
 export function Compare({ group, start, marks, toggleMark, keepOnly, onInfo, onClose }: Props) {
   const members = group.members;
-  const keeperIndex = Math.max(0, members.findIndex((m) => m.id === group.keeper));
-  const [left, setLeft] = useState(start === keeperIndex && members.length > 1 ? (keeperIndex + 1) % members.length : keeperIndex);
+  const keeperIndex = Math.max(
+    0,
+    members.findIndex((m) => m.id === group.keeper),
+  );
+  const [left, setLeft] = useState(
+    start === keeperIndex && members.length > 1 ? (keeperIndex + 1) % members.length : keeperIndex,
+  );
   const [right, setRight] = useState(Math.min(start, members.length - 1));
 
   useEffect(() => {

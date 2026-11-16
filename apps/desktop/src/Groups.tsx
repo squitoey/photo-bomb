@@ -52,7 +52,18 @@ interface Props {
 
 const asMark = (m: Member): Mark => ({ id: m.id, size: m.size, path: m.path });
 
-export function Groups({ kind, opts, onOpts, marks, toggleMark, setMarked, revision, onInfo, onChanged, onError }: Props) {
+export function Groups({
+  kind,
+  opts,
+  onOpts,
+  marks,
+  toggleMark,
+  setMarked,
+  revision,
+  onInfo,
+  onChanged,
+  onError,
+}: Props) {
   const [data, setData] = useState<GroupPage | null>(null);
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -109,7 +120,10 @@ export function Groups({ kind, opts, onOpts, marks, toggleMark, setMarked, revis
   /** Takes one photo out of its group; the rest stay grouped. */
   const ignoreOne = async (g: Group, m: Member) => {
     try {
-      await api.ignorePhoto(m.id, g.members.map((x) => x.id));
+      await api.ignorePhoto(
+        m.id,
+        g.members.map((x) => x.id),
+      );
       setMarked([asMark(m)], false);
       onChanged();
     } catch (e) {
@@ -136,7 +150,11 @@ export function Groups({ kind, opts, onOpts, marks, toggleMark, setMarked, revis
           </p>
         </div>
         <div className="row">
-          <button onClick={autoSelect} disabled={!data || data.total_groups === 0} title="Keep the suggested photo in every group and select the rest">
+          <button
+            onClick={autoSelect}
+            disabled={!data || data.total_groups === 0}
+            title="Keep the suggested photo in every group and select the rest"
+          >
             Auto-select all
           </button>
         </div>
@@ -150,19 +168,32 @@ export function Groups({ kind, opts, onOpts, marks, toggleMark, setMarked, revis
             </span>
             <div className="slider-row">
               <span className="muted small">Strict</span>
-              <input type="range" min={0} max={16} step={1} value={slider} onChange={(e) => setSlider(Number(e.target.value))} />
+              <input
+                type="range"
+                min={0}
+                max={16}
+                step={1}
+                value={slider}
+                onChange={(e) => setSlider(Number(e.target.value))}
+              />
               <span className="muted small">Loose</span>
             </div>
           </label>
           <label className="check">
-            <input type="checkbox" checked={opts.same_aspect} onChange={(e) => onOpts({ ...opts, same_aspect: e.target.checked })} />
+            <input
+              type="checkbox"
+              checked={opts.same_aspect}
+              onChange={(e) => onOpts({ ...opts, same_aspect: e.target.checked })}
+            />
             Same shape only
           </label>
           <label>
             Taken{" "}
             <select
               value={opts.time_window_secs ?? ""}
-              onChange={(e) => onOpts({ ...opts, time_window_secs: e.target.value === "" ? null : Number(e.target.value) })}
+              onChange={(e) =>
+                onOpts({ ...opts, time_window_secs: e.target.value === "" ? null : Number(e.target.value) })
+              }
             >
               {WINDOWS.map(([v, label]) => (
                 <option key={label} value={v ?? ""}>
@@ -177,8 +208,8 @@ export function Groups({ kind, opts, onOpts, marks, toggleMark, setMarked, revis
       {data && (
         <div className="summary">
           <strong>{data.total_groups.toLocaleString()}</strong> groups ·{" "}
-          <strong>{data.total_photos.toLocaleString()}</strong> files ·{" "}
-          <strong>{human(data.total_reclaimable)}</strong> reclaimable
+          <strong>{data.total_photos.toLocaleString()}</strong> files · <strong>{human(data.total_reclaimable)}</strong>{" "}
+          reclaimable
           {loading && <span className="spinner inline" />}
         </div>
       )}
@@ -208,7 +239,10 @@ export function Groups({ kind, opts, onOpts, marks, toggleMark, setMarked, revis
               <div className="row">
                 <button onClick={() => keepOnly(g, g.keeper)}>Keep suggested</button>
                 <button onClick={() => setComparing({ group: g, start: g.members.length > 1 ? 1 : 0 })}>Compare</button>
-                <button onClick={() => ignore(g)} title="Stop showing any of these as duplicates of each other. To take out a single photo, use its ⋯ menu.">
+                <button
+                  onClick={() => ignore(g)}
+                  title="Stop showing any of these as duplicates of each other. To take out a single photo, use its ⋯ menu."
+                >
                   None are duplicates
                 </button>
               </div>
@@ -249,7 +283,10 @@ export function Groups({ kind, opts, onOpts, marks, toggleMark, setMarked, revis
                       <div className="muted small">
                         {m.width && m.height ? `${m.width}×${m.height} · ` : ""}
                         {human(m.size)}
-                        {g.kind === "similar" && m.id !== g.keeper && m.distance != null && ` · ${similarity(m.distance)}%`}
+                        {g.kind === "similar" &&
+                          m.id !== g.keeper &&
+                          m.distance != null &&
+                          ` · ${similarity(m.distance)}%`}
                       </div>
                       {m.taken_at && <div className="muted small">{dateTime(m.taken_at)}</div>}
                       <div className="muted small dir">{dirName(m.path)}</div>

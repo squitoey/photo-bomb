@@ -26,7 +26,12 @@ export function PhotoMenu({ items }: { items: MenuItem[] }) {
   }, [open]);
 
   return (
-    <div className="photo-menu" ref={ref} onClick={(e) => e.stopPropagation()} onDoubleClick={(e) => e.stopPropagation()}>
+    <div
+      className="photo-menu"
+      ref={ref}
+      onClick={(e) => e.stopPropagation()}
+      onDoubleClick={(e) => e.stopPropagation()}
+    >
       <button className="menu-btn" aria-label="Photo options" title="Options" onClick={() => setOpen((o) => !o)}>
         ⋯
       </button>
