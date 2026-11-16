@@ -18,7 +18,10 @@ export function Sources({ status, scanning, progress, lastScan, revision, onScan
   const [unreadable, setUnreadable] = useState<Photo[] | null>(null);
 
   useEffect(() => {
-    api.sources().then(setSources).catch((e) => onError(String(e)));
+    api
+      .sources()
+      .then(setSources)
+      .catch((e) => onError(String(e)));
     setUnreadable(null);
   }, [revision, onError]);
 
@@ -89,7 +92,10 @@ export function Sources({ status, scanning, progress, lastScan, revision, onScan
             </span>
           </div>
           <div className="progress">
-            <div className={pct === null ? "bar indeterminate" : "bar"} style={pct === null ? undefined : { width: `${pct}%` }} />
+            <div
+              className={pct === null ? "bar indeterminate" : "bar"}
+              style={pct === null ? undefined : { width: `${pct}%` }}
+            />
           </div>
         </div>
       )}
@@ -123,10 +129,19 @@ export function Sources({ status, scanning, progress, lastScan, revision, onScan
                 className="check"
                 title="For folders on an external or network drive. Files that cannot be found stay in the index, so they are matched again when the drive comes back."
               >
-                <input type="checkbox" checked={s.removable} disabled={scanning} onChange={(e) => setRemovable(s, e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={s.removable}
+                  disabled={scanning}
+                  onChange={(e) => setRemovable(s, e.target.checked)}
+                />
                 Removable drive
               </label>
-              <button onClick={() => remove(s)} disabled={scanning} title="Stops tracking this folder. Files are not touched.">
+              <button
+                onClick={() => remove(s)}
+                disabled={scanning}
+                title="Stops tracking this folder. Files are not touched."
+              >
                 Remove
               </button>
             </div>
@@ -153,7 +168,16 @@ export function Sources({ status, scanning, progress, lastScan, revision, onScan
             <div className="muted">
               unreadable{" "}
               {status.unreadable > 0 && unreadable === null && (
-                <a onClick={() => api.unreadable().then(setUnreadable).catch((e) => onError(String(e)))}>show</a>
+                <a
+                  onClick={() =>
+                    api
+                      .unreadable()
+                      .then(setUnreadable)
+                      .catch((e) => onError(String(e)))
+                  }
+                >
+                  show
+                </a>
               )}
             </div>
           </div>
@@ -188,7 +212,16 @@ export function Sources({ status, scanning, progress, lastScan, revision, onScan
       {status && status.ignored > 0 && (
         <p className="muted small">
           {status.ignored} "not duplicates" decision(s) saved.{" "}
-          <a onClick={() => api.clearIgnored().then(onChanged).catch((e) => onError(String(e)))}>Reset</a>
+          <a
+            onClick={() =>
+              api
+                .clearIgnored()
+                .then(onChanged)
+                .catch((e) => onError(String(e)))
+            }
+          >
+            Reset
+          </a>
         </p>
       )}
       {status && <p className="muted small">Index: {status.library_path}</p>}

@@ -19,7 +19,10 @@ export function History({ revision, onChanged, onError }: Props) {
   const [note, setNote] = useState<string | null>(null);
 
   useEffect(() => {
-    api.history().then(setEntries).catch((e) => onError(String(e)));
+    api
+      .history()
+      .then(setEntries)
+      .catch((e) => onError(String(e)));
   }, [revision, onError]);
 
   const undo = async (h: HistoryEntry) => {

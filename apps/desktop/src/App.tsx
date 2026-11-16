@@ -1,16 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
-import {
-  api,
-  AppStatus,
-  human,
-  Mark,
-  Photo,
-  ScanFinished,
-  ScanProgress,
-  ScanSummary,
-  SimilarOpts,
-} from "./api";
+import { api, AppStatus, human, Mark, Photo, ScanFinished, ScanProgress, ScanSummary, SimilarOpts } from "./api";
 import { Sources } from "./Sources";
 import { Groups } from "./Groups";
 import { Review } from "./Review";
@@ -46,7 +36,10 @@ export default function App() {
   const [revision, setRevision] = useState(0);
 
   const refresh = useCallback(() => {
-    api.status().then(setStatus).catch((e) => setError(String(e)));
+    api
+      .status()
+      .then(setStatus)
+      .catch((e) => setError(String(e)));
     setRevision((r) => r + 1);
   }, []);
 
@@ -78,7 +71,10 @@ export default function App() {
 
   // Sidebar counts.
   useEffect(() => {
-    api.exactGroups(0, 0).then((p) => setCounts((c) => ({ ...c, exact: p.total_groups }))).catch(() => {});
+    api
+      .exactGroups(0, 0)
+      .then((p) => setCounts((c) => ({ ...c, exact: p.total_groups })))
+      .catch(() => {});
   }, [revision]);
   useEffect(() => {
     api

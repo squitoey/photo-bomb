@@ -81,7 +81,9 @@ Nothing is written into your photo folders. Deleting both locations resets the a
 
 ## Development
 
-- CI (`.github/workflows/ci.yml`) runs on every push to every branch: frontend type-check and
-  build, `cargo fmt --check`, `cargo clippy -D warnings`, and the tests on Linux, macOS and Windows.
-- Before pushing: `cargo fmt --all && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace`
+- CI (`.github/workflows/ci.yml`) runs on every push to every branch: Prettier, ESLint, frontend
+  type-check and build, `cargo fmt --check`, `cargo clippy -D warnings`, and the tests on Linux,
+  macOS and Windows.
+- Before pushing, Rust: `cargo fmt --all && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace`
+- Before pushing, frontend (in `apps/desktop`): `pnpm format && pnpm lint && pnpm build`
 - Releases: see [RELEASING.md](RELEASING.md).

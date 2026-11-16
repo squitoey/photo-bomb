@@ -5,7 +5,7 @@ const VIDEO = ["mp4", "mov", "m4v"];
 const ext = (p: Photo) => (p.path.split(".").pop() ?? "").toLowerCase();
 
 /** False for videos and for files that could not be read as images. */
-export const canPreview = (p: Photo) => p.decoded !== 2 && !VIDEO.includes(ext(p));
+const canPreview = (p: Photo) => p.decoded !== 2 && !VIDEO.includes(ext(p));
 
 interface Props {
   photo: Photo;

@@ -77,7 +77,11 @@ export function Others({ opts, revision, onInfo, onChanged, onError }: Props) {
                           {
                             label: "Include in duplicate matching",
                             hint: "Undo “not a duplicate” for this file",
-                            onClick: () => api.unignorePhoto(p.id).then(onChanged).catch((e) => onError(String(e))),
+                            onClick: () =>
+                              api
+                                .unignorePhoto(p.id)
+                                .then(onChanged)
+                                .catch((e) => onError(String(e))),
                           },
                         ]
                       : []),
