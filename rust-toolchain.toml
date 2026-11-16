@@ -1,0 +1,4 @@
+# Pinned so local builds and CI lint with the same compiler. Raise it deliberately.
+[toolchain]
+channel = "1.100.0"
+components = ["rustfmt", "clippy"]

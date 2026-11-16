@@ -1,0 +1,15 @@
+[package]
+name = "photobomb-cli"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "photobomb"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+dunce = "1"
+clap = { version = "4", features = ["derive", "env"] }
+photobomb-core = { path = "../photobomb-core" }
+serde_json = "1"
